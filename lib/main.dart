@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import './pages/home_page.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -8,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Starter',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.amber,
       ),
       home: MyHomePage(title: 'Flutter Starter'),
     );
@@ -51,13 +53,26 @@ class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
+  TabController controller;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   int _counter = 0;
+
+  TabController controller;
+  @override
+    void initState() {
+      super.initState();
+      controller = new TabController(vsync: this, length: 3);
+    }
+  @override
+    void dispose() {
+      controller.dispose();
+      super.dispose();
+    }
 
   void _incrementCounter() {
     setState(() {
@@ -70,6 +85,50 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        bottom: new TabBar(
+          controller: controller,
+          tabs: <Tab>[
+            new Tab(icon: new Icon(Icons.star)),
+            new Tab(icon: new Icon(Icons.whatshot)),
+            new Tab(icon: new Icon(Icons.search)),
+          ],
+        ),
+      ),
+      drawer: new Drawer(
+        child: new ListView(
+          children: <Widget>[
+            new UserAccountsDrawerHeader(
+              accountName: new Text('User', style: TextStyle(color: Colors.white),),
+              accountEmail: new Text('user@email.com', style: TextStyle(color: Colors.white),),
+              currentAccountPicture: new GestureDetector(
+                onTap: () => print('This is the current user'),
+                child: new CircleAvatar(
+                  backgroundImage: new NetworkImage('https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1489&q=80'),
+                ),
+              ),
+              decoration: new BoxDecoration(
+                image: new DecorationImage(
+                  fit: BoxFit.fill,
+                  image: new NetworkImage('https://images.unsplash.com/photo-1494253109108-2e30c049369b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1000&q=80')
+                )
+              ),
+            ),
+            new ListTile(
+              title: new Text('Home'),
+              trailing: new Icon(Icons.home),
+            ),
+            new ListTile(
+              title: new Text('Settings'),
+              trailing: new Icon(Icons.settings),
+            ),
+            new Divider(),
+            new ListTile(
+              title: new Text('Close'),
+              trailing: new Icon(Icons.close),
+              onTap: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Column(
